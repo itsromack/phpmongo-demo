@@ -9,7 +9,6 @@ $data = [];
 
 while (($row_data = fgetcsv($handle, 1000, ',')) !== FALSE)
 {
-//	var_dump($row_data);
 	if ($row_index++ < 1)
 	{
 		foreach ($row_data as $col)
@@ -29,6 +28,12 @@ while (($row_data = fgetcsv($handle, 1000, ',')) !== FALSE)
 }
 
 fclose($handle);
-//exit;
-var_dump($data);
-var_dump($headers);
+
+foreach ($data as $item)
+{
+	echo $item['City or Province'] . ' ' . $item['Region'];
+	echo "\n\tLife Expectancy: " . $item['Life Expectancy at birth (years) 2012'];
+	echo "\n\tYears of Schooling: " . $item['Expected years of Schooling 2012'];
+	echo "\n\tPer Capita Income: " . $item['Per Capita Income 2012 (PPP NCR 2012 Pesos)'];
+	echo "\n";
+}
