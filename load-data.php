@@ -1,7 +1,12 @@
 <?php
 
-$filename = 'PH2012-hdi.csv';
-$handle = fopen($filename, 'r');
+require "vendor/autoload.php";
+
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
+$csv_filename = 'PH2012-hdi.csv';
+$handle = fopen($csv_filename, 'r');
 $row_index = 0;
 $headers = [];
 
@@ -29,6 +34,12 @@ while (($row_data = fgetcsv($handle, 1000, ',')) !== FALSE)
 
 fclose($handle);
 
+// Load Data to MongoDB
+
+$client = new MongoDB\Client($_ENV['MDB_SERVER']);
+
+$collection = $client->test->phhdi;
+
 foreach ($data as $item)
 {
 	echo $item['City or Province'] . ' ' . $item['Region'];
@@ -36,4 +47,17 @@ foreach ($data as $item)
 	echo "\n\tYears of Schooling: " . $item['Expected years of Schooling 2012'];
 	echo "\n\tPer Capita Income: " . $item['Per Capita Income 2012 (PPP NCR 2012 Pesos)'];
 	echo "\n";
+
+	$doc = [
+		'city_province' => $item['City or Province'],
+		'region' => $item['Region'],
+		'life_expectancy' => $item['Life Expectancy at birth (years) 2012'],
+		'years_schooling' => $item['Expected years of Schooling 2012'],
+		'per_capita_income' => $item['Per Capita Income 2012 (PPP NCR 2012 Pesos)']
+	];
+
+	$result = $collection->insertOne($doc);
+	var_dump($result);
 }
+
+echo 'DONE';
